@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BROWMINIE CAKE — Brownies & Fudgy Brownies</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            choco: {
+              dark: '#2B170E',
+              DEFAULT: '#3E2216',
+              melty: '#5C3321',
+              soft: '#7A4933',
+            },
+            caramel: {
+              DEFAULT: '#C68B59',
+              light: '#E3B992',
+              pale: '#F3DFC8',
+            },
+            cream: {
+              DEFAULT: '#FAF5EF',
+              card: '#FFFDFB',
+              warm: '#F2E7DC',
+            },
+          },
+          fontFamily: {
+            brand: ['"Montserrat"', 'sans-serif'],
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+</head>
+<body class="bg-cream text-choco-dark font-sans antialiased selection:bg-choco selection:text-cream flex flex-col min-h-screen">
+
+  <!-- ==================== NOTIFIKASI TOAST & ALERT ==================== -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- NOTIFIKASI AUDIO / VISUAL PESANAN MASUK -->
+  <div id="order-notification-banner" class="hidden fixed top-0 left-0 right-0 z-50 bg-amber-500 text-choco-dark py-3 px-4 shadow-xl border-b-2 border-choco animate-bounce">
+    <div class="max-w-4xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-2.5">
+        <i data-lucide="bell-ring" class="w-6 h-6 animate-spin"></i>
+        <span class="font-extrabold text-sm sm:text-base">🔔 PESANAN BARU MASUK! Silakan cek Halaman Rekap Pemilik.</span>
+      </div>
+      <button onclick="dismissOrderNotification()" class="px-3 py-1 bg-choco text-cream rounded-xl text-xs font-bold hover:bg-choco-melty">Tutup</button>
+    </div>
+  </div>
+
+  <!-- ==================== TOP INFO BAR ==================== -->
+  <div class="bg-choco-dark text-cream text-[11px] sm:text-xs py-2 px-4 border-b border-choco-melty">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-center sm:justify-between gap-2 text-center">
+      <div class="flex items-center gap-2 font-medium">
+        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="topbar-status">We're OPEN</span>
+        </span>
+        <span class="text-caramel-light">•</span>
+        <span id="topbar-h3" class="font-semibold text-caramel-pale">Order max H-3</span>
+      </div>
+      <div class="hidden sm:flex items-center gap-3 text-cream/80">
+        <span class="flex items-center gap-1"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-caramel"></i> <span id="topbar-location">Purwokerto Selatan</span></span>
+        <span>•</span>
+        <span id="topbar-delivery">Melayani DO, COD & Ambil di Tempat</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== HEADER & NAVIGASI ==================== -->
+  <header class="sticky top-0 z-40 bg-cream/95 backdrop-blur-md border-b border-cream-warm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 py-3 flex items-center justify-between gap-3">
+      <a href="#beranda" onclick="switchView('customer')" class="flex items-center gap-3 group">
+        <div class="w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-white border border-choco/25 shadow-xs flex flex-col items-center justify-center p-1 shrink-0 group-hover:border-choco transition">
+          <span class="font-brand font-extrabold text-[7.5px] sm:text-[8.5px] tracking-[0.14em] text-choco-dark leading-none">BROWMINIE</span>
+          <span class="font-brand font-medium text-[7px] sm:text-[7.5px] tracking-[0.22em] text-choco-soft mt-0.5 leading-none">cake</span>
+        </div>
+        <div>
+          <span id="header-store-name" class="font-brand font-extrabold text-base sm:text-lg text-choco-dark tracking-wider block leading-tight">
+            BROWMINIE CAKE
+          </span>
+          <span class="text-[10px] sm:text-[11px] text-choco-soft tracking-widest uppercase font-semibold">Brownies | Fudgy Brownies</span>
+        </div>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-6 text-sm font-semibold">
+        <button onclick="switchView('customer'); scrollToSection('beranda')" class="text-choco-dark hover:text-choco-melty transition py-2">Beranda</button>
+        <button onclick="switchView('customer'); scrollToSection('katalog')" class="text-choco-dark hover:text-choco-melty transition py-2">Menu & Harga</button>
+        <button onclick="switchView('customer'); scrollToSection('info-order')" class="text-choco-dark hover:text-choco-melty transition py-2">Info Order</button>
+        <button id="nav-admin-btn" onclick="switchView('admin')" class="relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-cream-warm text-choco-dark hover:bg-caramel-pale transition font-bold border border-caramel/30">
+          <i data-lucide="clipboard-list" class="w-4 h-4 text-choco-melty"></i>
+          <span>Rekap Pemilik</span>
+          <span id="admin-badge-count" class="bg-choco text-cream text-[11px] px-1.5 py-0.5 rounded-full leading-none">0</span>
+        </button>
+      </nav>
+
+      <div class="flex items-center gap-2 sm:gap-2.5">
+        <a id="header-ig-link" href="https://www.instagram.com/browminie.cake?rpxt=MW5zZGx0dDcycHF5cw==" target="_blank" rel="noopener noreferrer" aria-label="Instagram Browminie Cake"
+           class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-cream-warm bg-white text-choco-dark hover:text-choco-melty hover:border-caramel flex items-center justify-center transition shadow-2xs">
+          <i data-lucide="instagram" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+        </a>
+        <a id="header-wa-link" href="https://wa.me/628985490037" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp Browminie Cake"
+           class="w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-cream-warm bg-white text-emerald-700 hover:bg-emerald-50 hover:border-emerald-600 flex items-center justify-center transition shadow-2xs">
+          <i data-lucide="message-circle" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+        </a>
+        <button onclick="openCartDrawer()" class="relative flex items-center gap-2 bg-choco hover:bg-choco-melty text-cream px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-full text-sm font-bold shadow-sm transition">
+          <i data-lucide="shopping-bag" class="w-4 h-4 text-caramel-light"></i>
+          <span class="hidden sm:inline">Keranjang</span>
+          <span id="cart-count-badge" class="bg-caramel text-choco-dark text-xs font-extrabold px-1.5 py-0.5 rounded-full min-w-[20px] text-center">0</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="flex md:hidden items-center justify-around border-t border-cream-warm bg-cream px-2 py-2 text-xs font-semibold">
+      <button onclick="switchView('customer'); scrollToSection('katalog')" class="flex items-center gap-1 text-choco-dark hover:text-choco-melty py-1 px-2">
+        <i data-lucide="grid" class="w-3.5 h-3.5 text-caramel"></i> Menu Kue
+      </button>
+      <button onclick="openCartDrawer()" class="flex items-center gap-1 text-choco-dark hover:text-choco-melty py-1 px-2">
+        <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-caramel"></i> Form Pesan
+      </button>
+      <button onclick="switchView('admin')" class="flex items-center gap-1 text-choco-dark font-bold bg-cream-warm px-3 py-1 rounded-full border border-caramel/30">
+        <i data-lucide="clipboard-list" class="w-3.5 h-3.5 text-choco-melty"></i> Rekap (<span id="admin-badge-mobile">0</span>)
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== TAMPILAN 1: HALAMAN PELANGGAN ==================== -->
+  <main id="customer-view" class="flex-1">
+    
+    <!-- HERO SECTION -->
+    <section id="beranda" class="relative overflow-hidden border-b border-cream-warm bg-gradient-to-br from-cream via-cream-warm/60 to-caramel-pale/40">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-20">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div class="lg:col-span-7 space-y-5 text-center lg:text-left">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-caramel/40 text-choco text-xs font-bold tracking-wide shadow-2xs">
+              <span class="w-2 h-2 rounded-full bg-caramel"></span>
+              <span>BROWNIES | FUDGY BROWNIES • PURWOKERTO SELATAN</span>
+            </div>
+
+            <h1 class="font-serif text-3xl sm:text-5xl lg:text-[52px] font-bold text-choco-dark leading-[1.15]">
+              Sweet brownie for a <span class="text-choco-melty italic underline decoration-caramel/70 decoration-4 underline-offset-4">sweet day!!</span>
+            </h1>
+
+            <p class="text-choco-soft text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
+              <strong class="text-choco-dark">Your comfort dessert here.</strong> Fudgy brownies panggang rumahan dengan tekstur lembut, cokelat pekat lumer, dan aneka topping melimpah. Pilih menu favoritmu dan pesan langsung sekarang!
+            </p>
+
+            <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3">
+              <a href="#katalog" class="px-6 py-3.5 rounded-full bg-choco hover:bg-choco-melty text-cream font-bold text-sm sm:text-base shadow-md shadow-choco/20 transition flex items-center gap-2">
+                <span>Pilih Menu Brownies</span>
+                <i data-lucide="arrow-down" class="w-4 h-4 text-caramel-light"></i>
+              </a>
+              <a id="hero-wa-btn" href="https://wa.me/628985490037" target="_blank" rel="noopener noreferrer"
+                 class="px-5 py-3.5 rounded-full bg-white hover:bg-emerald-50 text-choco-dark border border-cream-warm font-bold text-sm sm:text-base transition flex items-center gap-2 shadow-2xs">
+                <i data-lucide="message-circle" class="w-4 h-4 text-emerald-600"></i>
+                <span>WhatsApp Admin</span>
+              </a>
+              <a id="hero-ig-btn" href="https://www.instagram.com/browminie.cake?rpxt=MW5zZGx0dDcycHF5cw==" target="_blank" rel="noopener noreferrer"
+                 class="px-5 py-3.5 rounded-full bg-white hover:bg-caramel-pale/40 text-choco-dark border border-cream-warm font-bold text-sm sm:text-base transition flex items-center gap-2 shadow-2xs">
+                <i data-lucide="instagram" class="w-4 h-4 text-choco-melty"></i>
+                <span>@browminie.cake</span>
+              </a>
+            </div>
+
+            <div class="pt-5 grid grid-cols-3 gap-3 max-w-lg mx-auto lg:mx-0 border-t border-choco/10 text-left">
+              <div>
+                <p class="font-bold text-choco-dark text-xs sm:text-sm flex items-center gap-1">
+                  <i data-lucide="calendar-clock" class="w-3.5 h-3.5 text-caramel"></i> Order Max H-3
+                </p>
+                <p class="text-[11px] sm:text-xs text-choco-soft mt-0.5">Freshly baked by order</p>
+              </div>
+              <div>
+                <p class="font-bold text-choco-dark text-xs sm:text-sm flex items-center gap-1">
+                  <i data-lucide="bike" class="w-3.5 h-3.5 text-caramel"></i> DO & COD
+                </p>
+                <p class="text-[11px] sm:text-xs text-choco-soft mt-0.5">Area Purwokerto</p>
+              </div>
+              <div>
+                <p class="font-bold text-choco-dark text-xs sm:text-sm flex items-center gap-1">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-caramel"></i> Lokasi Dapur
+                </p>
+                <p class="text-[11px] sm:text-xs text-choco-soft mt-0.5">Purwokerto Selatan</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5">
+            <div class="relative mx-auto max-w-md">
+              <div id="hero-featured-img-wrapper" class="aspect-[4/3] rounded-3xl overflow-hidden shadow-xl border-4 border-white bg-choco-dark">
+                <img
+                  id="hero-featured-img"
+                  src=""
+                  alt="BROWMINIE CAKE Fudgy Brownies"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+
+              <div class="mt-4 sm:mt-0 sm:absolute sm:-bottom-5 sm:-left-5 bg-white p-4 rounded-2xl shadow-lg border border-choco/20 flex items-center gap-3.5">
+                <div class="w-14 h-12 border border-choco-dark/40 bg-cream-card flex flex-col items-center justify-center px-2 shrink-0">
+                  <span class="font-brand font-extrabold text-[8px] tracking-[0.14em] text-choco-dark leading-none">BROWMINIE</span>
+                  <span class="font-brand font-medium text-[7px] tracking-[0.24em] text-choco-soft mt-1 leading-none">cake</span>
+                </div>
+                <div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-caramel">Comfort Dessert</span>
+                  <p class="font-bold text-choco-dark text-sm leading-tight">Fudgy & Melty Brownies</p>
+                  <p class="text-xs text-choco-soft">Mulai dari Rp 15.000</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KATALOG MENU -->
+    <section id="katalog" class="py-12 sm:py-16">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-widest text-caramel">Our Menu</span>
+            <h2 class="font-serif text-2xl sm:text-4xl font-bold text-choco-dark mt-1">Daftar Menu & Harga</h2>
+            <p class="text-choco-soft text-sm sm:text-base mt-1">Pilih varian topping yang diinginkan, lalu klik <strong>+ Tambah ke Pesanan</strong>.</p>
+          </div>
+
+          <div class="relative w-full md:w-64">
+            <i data-lucide="search" class="w-4 h-4 text-choco-soft absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input
+              type="text"
+              id="search-menu-input"
+              oninput="renderMenuGrid()"
+              placeholder="Cari menu brownies..."
+              class="w-full pl-10 pr-4 py-2.5 rounded-full bg-white border border-cream-warm text-sm text-choco-dark placeholder:text-choco-soft/70 focus:outline-none focus:border-choco"
+            />
+          </div>
+        </div>
+
+        <div id="menu-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+          <!-- Diisi via JavaScript -->
+        </div>
+
+        <div id="floating-cart-bar" class="hidden fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:w-96 z-30 bg-choco-dark text-cream p-4 rounded-2xl shadow-2xl border border-caramel/40 flex items-center justify-between gap-4">
+          <div>
+            <p class="text-xs text-caramel-light font-medium"><span id="float-item-count">0</span> item dipilih</p>
+            <p class="font-bold text-base sm:text-lg" id="float-total-price">Rp 0</p>
+          </div>
+          <button onclick="openCartDrawer()" class="bg-caramel text-choco-dark hover:bg-caramel-light px-4 py-2.5 rounded-xl font-extrabold text-sm flex items-center gap-1.5 transition shrink-0">
+            <span>Lanjut Pesan</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- INFO PEMESANAN & PENGIRIMAN -->
+    <section id="info-order" class="py-12 bg-cream-warm/60 border-t border-cream-warm">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-xl mx-auto mb-10">
+          <span class="text-xs font-bold uppercase tracking-widest text-caramel">Ketentuan Pemesanan</span>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-choco-dark mt-1">Informasi Order BROWMINIE CAKE</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white p-6 rounded-2xl border border-cream-warm shadow-2xs">
+            <div class="w-10 h-10 rounded-xl bg-choco text-caramel-light flex items-center justify-center mb-4">
+              <i data-lucide="calendar-check" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-bold text-lg text-choco-dark mb-1">Order Maksimal H-3</h3>
+            <p class="text-sm text-choco-soft leading-relaxed">Semua brownies dibuat segar berdasarkan pesanan (freshly baked). Pastikan memesan maksimal H-3 sebelum tanggal acara atau pengambilan.</p>
+          </div>
+          <div class="bg-white p-6 rounded-2xl border border-cream-warm shadow-2xs">
+            <div class="w-10 h-10 rounded-xl bg-choco text-caramel-light flex items-center justify-center mb-4">
+              <i data-lucide="truck" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-bold text-lg text-choco-dark mb-1">DO, COD & Ambil Sendiri</h3>
+            <p class="text-sm text-choco-soft leading-relaxed">Melayani DO (Delivery Order), COD (Cash on Delivery) area Purwokerto, maupun ambil langsung di dapur kami di Purwokerto Selatan.</p>
+          </div>
+          <div class="bg-white p-6 rounded-2xl border border-cream-warm shadow-2xs">
+            <div class="w-10 h-10 rounded-xl bg-choco text-caramel-light flex items-center justify-center mb-4">
+              <i data-lucide="message-circle" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-bold text-lg text-choco-dark mb-1">Konfirmasi Cepat via WA</h3>
+            <p class="text-sm text-choco-soft leading-relaxed">Setelah mengisi formulir di keranjang, pesanan otomatis terekap oleh admin dan langsung terhubung ke WhatsApp BROWMINIE CAKE.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== TAMPILAN 2: REKAP PEMILIK (REAL-TIME CLOUD) ==================== -->
+  <main id="admin-view" class="hidden flex-1 py-8 sm:py-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-cream-warm shadow-xs">
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-caramel-pale text-choco-dark text-xs font-bold mb-2">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-choco"></i> Halaman Pemilik Toko (Live Sinkron)
+          </div>
+          <h1 class="font-serif text-2xl sm:text-3xl font-bold text-choco-dark">Rekap Pesanan & Kelola Foto Menu</h1>
+          <p class="text-sm text-choco-soft mt-1">Data pesanan dari HP pembeli otomatis masuk ke perangkat ini secara real-time.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5">
+          <button onclick="switchView('customer')" class="px-4 py-2.5 rounded-xl border border-cream-warm bg-cream hover:bg-cream-warm text-choco-dark text-sm font-semibold flex items-center gap-1.5 transition">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali ke Toko
+          </button>
+          <button onclick="exportOrdersCSV()" class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-semibold flex items-center gap-1.5 shadow-xs transition">
+            <i data-lucide="download" class="w-4 h-4"></i> Unduh Rekap Excel (CSV)
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+        <div class="bg-white p-6 rounded-2xl border border-cream-warm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-cream-warm text-choco flex items-center justify-center shrink-0">
+            <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-choco-soft">Total Pesanan</p>
+            <p id="stat-total-orders" class="text-2xl sm:text-3xl font-extrabold text-choco-dark mt-0.5">0</p>
+          </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-cream-warm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-cream-warm text-choco flex items-center justify-center shrink-0">
+            <i data-lucide="package" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-choco-soft">Total Box / Cup Terjual</p>
+            <p id="stat-total-items" class="text-2xl sm:text-3xl font-extrabold text-choco-dark mt-0.5">0 <span class="text-sm font-normal text-choco-soft">pcs</span></p>
+          </div>
+        </div>
+
+        <div class="bg-choco text-cream p-6 rounded-2xl shadow-md flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-white/10 text-caramel-light flex items-center justify-center shrink-0">
+            <i data-lucide="wallet" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-caramel-light">Total Omzet Rekap</p>
+            <p id="stat-total-revenue" class="text-2xl sm:text-3xl font-extrabold mt-0.5">Rp 0</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl border border-cream-warm overflow-hidden shadow-xs">
+        <div class="border-b border-cream-warm px-6 pt-4 flex flex-wrap items-center justify-between gap-4 bg-cream/50">
+          <div class="flex items-center gap-6">
+            <button id="tab-orders-btn" onclick="switchAdminTab('orders')" class="pb-3.5 text-sm font-bold border-b-2 border-choco text-choco-dark transition">
+              Daftar Rekap Pesanan
+            </button>
+            <button id="tab-products-btn" onclick="switchAdminTab('products')" class="pb-3.5 text-sm font-semibold border-b-2 border-transparent text-choco-soft hover:text-choco-dark transition">
+              Kelola Foto & Menu Kue
+            </button>
+          </div>
+
+          <div id="order-filter-controls" class="pb-3 flex items-center gap-2">
+            <select id="filter-order-status" onchange="renderAdminOrders()" class="text-xs sm:text-sm bg-white border border-cream-warm rounded-xl px-3 py-1.5 text-choco-dark focus:outline-none focus:border-choco">
+              <option value="Semua">Semua Status</option>
+              <option value="Baru">Baru</option>
+              <option value="Diproses">Diproses</option>
+              <option value="Selesai">Selesai</option>
+            </select>
+            <button onclick="confirmClearOrders()" class="text-xs text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-xl border border-red-200 font-semibold transition">
+              Reset Rekap
+            </button>
+          </div>
+        </div>
+
+        <div id="admin-tab-orders" class="p-4 sm:p-6">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-cream-warm text-xs font-bold uppercase tracking-wider text-choco-soft bg-cream/60">
+                  <th class="py-3.5 px-4 rounded-tl-xl">ID & Waktu</th>
+                  <th class="py-3.5 px-4">Pemesan</th>
+                  <th class="py-3.5 px-4">Rincian Pesanan & Topping</th>
+                  <th class="py-3.5 px-4">Tanggal & Metode</th>
+                  <th class="py-3.5 px-4">Total</th>
+                  <th class="py-3.5 px-4 rounded-tr-xl">Status</th>
+                </tr>
+              </thead>
+              <tbody id="admin-orders-tbody" class="divide-y divide-cream-warm text-sm">
+                <!-- Diisi via Firebase -->
+              </tbody>
+            </table>
+          </div>
+          <div id="empty-orders-state" class="hidden py-12 text-center">
+            <div class="w-14 h-14 rounded-full bg-cream-warm text-choco mx-auto flex items-center justify-center mb-3">
+              <i data-lucide="inbox" class="w-7 h-7"></i>
+            </div>
+            <p class="font-bold text-choco-dark">Belum ada pesanan pada kategori ini</p>
+            <p class="text-xs text-choco-soft mt-1">Pesanan dari perangkat pembeli akan muncul otomatis secara real-time di sini.</p>
+          </div>
+        </div>
+
+        <div id="admin-tab-products" class="hidden p-6 space-y-8">
+          <div>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+              <div>
+                <h3 class="font-serif font-bold text-xl text-choco-dark">Daftar Menu Aktif & Ganti Foto</h3>
+                <p class="text-xs text-choco-soft">Klik tombol <strong>"Ganti Foto"</strong> untuk memperbarui menu di seluruh perangkat.</p>
+              </div>
+            </div>
+            <div id="admin-menu-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Diisi JS -->
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-6 border-t border-cream-warm">
+            <div class="bg-cream/60 p-6 rounded-2xl border border-cream-warm">
+              <h3 class="font-serif font-bold text-xl text-choco-dark mb-1">+ Tambah Menu Baru</h3>
+              <p class="text-xs text-choco-soft mb-4">Tambahkan varian kue baru beserta foto langsung dari galeri.</p>
+              
+              <form onsubmit="handleAddMenu(event)" class="space-y-4">
+                <div>
+                  <label class="block text-xs font-bold text-choco-dark mb-1">Nama Menu Kue *</label>
+                  <input type="text" id="new-menu-name" required placeholder="Contoh: Fudgy Brownies Loyang Besar"
+                         class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-cream-warm text-sm focus:outline-none focus:border-choco" />
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-xs font-bold text-choco-dark mb-1">Harga (Rp) *</label>
+                    <input type="number" id="new-menu-price" required min="1000" step="500" placeholder="55000"
+                           class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-cream-warm text-sm focus:outline-none focus:border-choco" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-choco-dark mb-1">Pilihan Topping (Pisahkan koma)</label>
+                    <input type="text" id="new-menu-toppings" placeholder="Mix Topping, Chocochips, Keju"
+                           class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-cream-warm text-sm focus:outline-none focus:border-choco" />
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-choco-dark mb-1">Deskripsi Singkat *</label>
+                  <textarea id="new-menu-desc" rows="2" required placeholder="Ukuran kemasan, tekstur, dan pilihan topping..."
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-cream-warm text-sm focus:outline-none focus:border-choco"></textarea>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-choco-dark mb-1">Pilih Foto Kue dari Galeri / Laptop</label>
+                  <input type="file" id="new-menu-file" accept="image/*"
+                         class="w-full text-xs text-choco-soft file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-choco file:text-cream hover:file:bg-choco-melty cursor-pointer bg-white p-1.5 rounded-xl border border-cream-warm" />
+                </div>
+
+                <button type="submit" class="w-full py-3 rounded-xl bg-choco hover:bg-choco-melty text-cream font-bold text-sm transition shadow-xs">
+                  Simpan Menu Baru
+                </button>
+              </form>
+            </div>
+
+            <div class="bg-cream/60 p-6 rounded-2xl border border-cream-warm flex flex-col justify-between">
+              <div>
+                <h3 class="font-serif font-bold text-xl text-choco-dark mb-1">Pengaturan Info & Kontak Toko</h3>
+                <p class="text-xs text-choco-soft mb-4">Ubah status buka/tutup, ketentuan H-3, nomor WhatsApp, atau tautan Instagram.</p>
+                
+                <form onsubmit="handleSaveStoreSettings(event)" class="space-y-3.5">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-xs font-bold text-choco-dark mb-1">Nama Toko</label>
+                      <input type="text" id="setting-store-name" required
+                             class="w-full px-3.5 py-2 rounded-xl bg-white border border-cream-warm text-sm focus:outline-none focus:border-choco" />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-choco-dark mb-1">Status Toko</label>
+                      <input type="text" id="setting-store-status" required placeholder="We're OPEN"
+                             class="w-full px-3.5 py-2 rounded-xl bg-white border border-cream-warm text-sm focus:outline-none focus:border-choco" />
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="block text-xs font-bold text-choco-dark mb-1">Ketentuan Order</label>
+                      <input type="text" id="setting-store-h3" required placeholder="Order max H-3"
+                             class="w-full px-3.5 py-2 rounded-xl bg-white border border-cream-warm text-sm focus:outline-none focus:border-choco" />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-choco-dark mb-1">Lokasi</label>
+                      <input type="text" id="setting-store-location" required placeholder="Purwokerto Selatan"
+                             class="w-full px-3.5 py-2 rounded-xl bg-white border border-cream-warm text-sm focus:outline-none focus:border-choco" />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-choco-dark mb-1">Nomor WhatsApp Admin (Awali 62)</label>
+                    <input type="text" id="setting-store-wa" required placeholder="628985490037"
+                           class="w-full px-3.5 py-2 rounded-xl bg-white border border-cream-warm text-sm focus:outline-none focus:border-choco" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-choco-dark mb-1">Link Instagram</label>
+                    <input type="url" id="setting-store-ig" required
+                           class="w-full px-3.5 py-2 rounded-xl bg-white border border-cream-warm text-sm focus:outline-none focus:border-choco" />
+                  </div>
+                  <button type="submit" class="w-full py-3 rounded-xl bg-caramel hover:bg-caramel-light text-choco-dark font-extrabold text-sm transition">
+                    Simpan Pengaturan Toko
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================== DRAWER KERANJANG ==================== -->
+  <div id="cart-drawer-backdrop" onclick="closeCartDrawer()" class="fixed inset-0 bg-choco-dark/60 backdrop-blur-xs z-50 hidden transition-opacity"></div>
+  <aside id="cart-drawer" class="fixed top-0 right-0 h-full w-full sm:w-[460px] bg-cream z-50 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="px-6 py-4 bg-white border-b border-cream-warm flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <i data-lucide="shopping-bag" class="w-5 h-5 text-choco"></i>
+        <h2 class="font-serif font-bold text-xl text-choco-dark">Keranjang Pesanan</h2>
+      </div>
+      <button onclick="closeCartDrawer()" class="w-9 h-9 rounded-full hover:bg-cream-warm flex items-center justify-center text-choco-dark transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-6 space-y-6">
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-choco-soft">Brownies yang Dipilih</h3>
+          <button onclick="clearCart()" id="clear-cart-btn" class="text-xs text-choco-melty hover:underline font-semibold hidden">Kosongkan</button>
+        </div>
+        <div id="cart-items-container" class="space-y-3"></div>
+      </div>
+
+      <div id="cart-summary-box" class="bg-white p-4 rounded-2xl border border-cream-warm space-y-2 hidden">
+        <div class="flex justify-between text-sm text-choco-soft">
+          <span>Total Jumlah</span>
+          <span id="drawer-total-qty">0 pcs</span>
+        </div>
+        <div class="flex justify-between text-base font-bold text-choco-dark pt-2 border-t border-cream-warm">
+          <span>Total Pembayaran</span>
+          <span id="drawer-total-price" class="text-choco text-lg font-extrabold">Rp 0</span>
+        </div>
+      </div>
+
+      <form id="checkout-form" onsubmit="submitOrder(event)" class="space-y-4 hidden">
+        <div class="bg-caramel-pale/50 border border-caramel/40 rounded-xl p-3 text-xs text-choco-dark flex items-start gap-2">
+          <i data-lucide="info" class="w-4 h-4 text-choco shrink-0 mt-0.5"></i>
+          <span>Catatan: <strong>Order max H-3</strong>. Dapur berlokasi di <strong>Purwokerto Selatan</strong>.</span>
+        </div>
+
+        <h3 class="text-xs font-bold uppercase tracking-wider text-choco-soft pt-1">Data Pemesan</h3>
+        
+        <div>
+          <label class="block text-xs font-bold text-choco-dark mb-1">Nama Pemesan *</label>
+          <input type="text" id="order-name" required placeholder="Masukkan nama lengkap Anda"
+                 class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-cream-warm text-sm focus:outline-none focus:border-choco" />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-choco-dark mb-1">Nomor WhatsApp *</label>
+            <input type="tel" id="order-phone" required placeholder="08xxxxxxxxxx"
+                   class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-cream-warm text-sm focus:outline-none focus:border-choco" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-choco-dark mb-1">Tanggal Ambil / Kirim *</label>
+            <input type="date" id="order-date" required
+                   class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-cream-warm text-sm focus:outline-none focus:border-choco" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-choco-dark mb-1">Metode Pengiriman *</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="cursor-pointer">
+              <input type="radio" name="deliveryMethod" value="DO (Delivery Order)" checked onchange="toggleAddressField()" class="peer sr-only" />
+              <div class="p-2.5 rounded-xl border border-cream-warm bg-white text-center text-xs font-bold text-choco-dark peer-checked:bg-choco peer-checked:text-cream peer-checked:border-choco transition">
+                DO (Antar)
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="deliveryMethod" value="COD" onchange="toggleAddressField()" class="peer sr-only" />
+              <div class="p-2.5 rounded-xl border border-cream-warm bg-white text-center text-xs font-bold text-choco-dark peer-checked:bg-choco peer-checked:text-cream peer-checked:border-choco transition">
+                COD
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="deliveryMethod" value="Ambil di Tempat" onchange="toggleAddressField()" class="peer sr-only" />
+              <div class="p-2.5 rounded-xl border border-cream-warm bg-white text-center text-xs font-bold text-choco-dark peer-checked:bg-choco peer-checked:text-cream peer-checked:border-choco transition">
+                Ambil Sendiri
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label id="address-label" class="block text-xs font-bold text-choco-dark mb-1">Alamat Pengiriman / Titik COD *</label>
+          <textarea id="order-notes" rows="2" required placeholder="Masukkan alamat lengkap pengiriman (area Purwokerto) & catatan tambahan..."
+                    class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-cream-warm text-sm focus:outline-none focus:border-choco"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 rounded-2xl bg-choco hover:bg-choco-melty text-cream font-bold text-sm sm:text-base shadow-lg shadow-choco/20 flex items-center justify-center gap-2 transition">
+          <i data-lucide="check-circle-2" class="w-5 h-5 text-caramel-light"></i>
+          <span>Pesan Sekarang & Simpan Rekap</span>
+        </button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- ==================== MODAL SUKSES ==================== -->
+  <div id="success-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-choco-dark/65 backdrop-blur-xs">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 border border-cream-warm shadow-2xl text-center space-y-5">
+      <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-700 mx-auto flex items-center justify-center">
+        <i data-lucide="check" class="w-8 h-8"></i>
+      </div>
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-caramel">Pesanan Tercatat</span>
+        <h3 class="font-serif text-2xl font-bold text-choco-dark mt-1">Terima Kasih, <span id="modal-customer-name">Kak</span>!</h3>
+        <p class="text-sm text-choco-soft mt-2 leading-relaxed">
+          Pesanan Anda (<strong id="modal-order-id" class="text-choco-dark">#BRW-001</strong>) sudah masuk secara online ke rekap dapur <strong>BROWMINIE CAKE</strong>. Klik tombol di bawah untuk langsung kirim format pesanan ke WhatsApp kami.
+        </p>
+      </div>
+
+      <div class="bg-cream p-3.5 rounded-2xl border border-cream-warm text-left text-xs text-choco-dark space-y-1 max-h-40 overflow-y-auto" id="modal-order-summary"></div>
+
+      <div class="space-y-2.5 pt-1">
+        <a id="modal-wa-send-btn" href="https://wa.me/628985490037" target="_blank" rel="noopener noreferrer"
+           class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md transition">
+          <i data-lucide="message-circle" class="w-5 h-5"></i>
+          <span>Kirim Pesanan ke WhatsApp</span>
+        </a>
+        <button onclick="closeSuccessModal()" class="w-full py-2.5 rounded-xl bg-cream-warm hover:bg-caramel-pale text-choco-dark font-semibold text-sm transition">
+          Tutup & Kembali ke Beranda
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL KONFIRMASI RESET ==================== -->
+  <div id="confirm-reset-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-choco-dark/65 backdrop-blur-xs">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 border border-cream-warm shadow-2xl text-center space-y-4">
+      <div class="w-12 h-12 rounded-full bg-red-100 text-red-700 mx-auto flex items-center justify-center">
+        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+      </div>
+      <h3 class="font-serif text-xl font-bold text-choco-dark">Hapus Semua Rekap Online?</h3>
+      <p class="text-xs text-choco-soft leading-relaxed">Seluruh data riwayat pesanan online akan dihapus dari server cloud.</p>
+      <div class="flex gap-2.5 pt-2">
+        <button onclick="closeResetModal()" class="flex-1 py-2.5 rounded-xl border border-cream-warm text-choco-dark font-semibold text-sm hover:bg-cream">Batal</button>
+        <button onclick="executeClearOrders()" class="flex-1 py-2.5 rounded-xl bg-red-700 text-white font-semibold text-sm hover:bg-red-800">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-choco-dark text-cream/90 mt-auto border-t border-choco">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pb-8 border-b border-white/10">
+        <div class="space-y-3">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-full bg-white flex flex-col items-center justify-center p-1 shrink-0">
+              <span class="font-brand font-extrabold text-[7px] tracking-[0.14em] text-choco-dark leading-none">BROWMINIE</span>
+              <span class="font-brand font-medium text-[6.5px] tracking-[0.2em] text-choco-soft mt-0.5 leading-none">cake</span>
+            </div>
+            <div>
+              <span id="footer-store-name" class="font-brand font-extrabold text-lg text-white tracking-wider block">BROWMINIE CAKE</span>
+              <span class="text-[11px] text-caramel-light">BROWNIES | FUDGY BROWNIES</span>
+            </div>
+          </div>
+          <p class="text-sm text-cream/75 leading-relaxed">
+            Sweet brownie for a sweet day!! Your comfort dessert here. Dipanggang hangat dengan cokelat pilihan untuk menemani hari manismu.
+          </p>
+        </div>
+
+        <div class="space-y-2.5">
+          <h4 class="font-bold text-sm uppercase tracking-wider text-caramel-light">Informasi Pemesanan</h4>
+          <p class="text-sm text-cream/85 flex items-center gap-2">
+            <i data-lucide="calendar-clock" class="w-4 h-4 text-caramel"></i>
+            <span>Order max H-3 (Made by order)</span>
+          </p>
+          <p class="text-sm text-cream/85 flex items-center gap-2">
+            <i data-lucide="map-pin" class="w-4 h-4 text-caramel"></i>
+            <span>Purwokerto Selatan</span>
+          </p>
+          <p class="text-sm text-cream/85 flex items-center gap-2">
+            <i data-lucide="bike" class="w-4 h-4 text-caramel"></i>
+            <span>Melayani DO, COD & Ambil di Tempat</span>
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <h4 class="font-bold text-sm uppercase tracking-wider text-caramel-light">Hubungi & Ikuti Kami</h4>
+          <p class="text-sm text-cream/75">DM Instagram atau chat WhatsApp untuk informasi lebih lanjut:</p>
+          <div class="flex flex-wrap gap-2.5 pt-1">
+            <a id="footer-wa-link" href="https://wa.me/628985490037" target="_blank" rel="noopener noreferrer"
+               class="px-4 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 transition">
+              <i data-lucide="message-circle" class="w-4 h-4"></i>
+              <span>WhatsApp</span>
+            </a>
+            <a id="footer-ig-link" href="https://www.instagram.com/browminie.cake?rpxt=MW5zZGx0dDcycHF5cw==" target="_blank" rel="noopener noreferrer"
+               class="px-4 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold flex items-center gap-2 transition">
+              <i data-lucide="instagram" class="w-4 h-4 text-caramel-light"></i>
+              <span>@browminie.cake</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-cream/50 gap-2">
+        <p>&copy; 2026 <span id="copyright-store-name">BROWMINIE CAKE</span>. Purwokerto Selatan.</p>
+        <button onclick="switchView('admin')" class="text-caramel-light/80 hover:text-caramel-light underline">Halaman Rekap Pemilik Toko</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== FIREBASE & LOGIKA APLIKASI ==================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Inisialisasi Firebase Global
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'browminie-cake-app';
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { apiKey: "mock", projectId: "mock" };
+
+    let db, auth, userId = null;
+    let orders = [];
+    let previousOrdersCount = 0;
+    let isInitialized = false;
+
+    try {
+      const app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      auth = getAuth(app);
+
+      const initAuth = async () => {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+        userId = auth.currentUser?.uid || crypto.randomUUID();
+        setupRealtimeSync();
+      };
+      initAuth();
+    } catch (e) {
+      console.warn("Menggunakan mode lokal offline:", e);
+      orders = JSON.parse(localStorage.getItem('brw_orders_v1')) || [];
+      isInitialized = true;
+    }
+
+    function createBrowniesIllustration(type) {
+      if (type === 'sekat') {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><rect width="800" height="600" fill="#2B170E"/><rect x="70" y="50" width="660" height="500" rx="24" fill="#C89D74"/><rect x="92" y="72" width="616" height="456" rx="16" fill="#F5EFE8"/><text x="400" y="300" font-family="sans-serif" font-size="24" font-weight="bold" fill="#3B1E12" text-anchor="middle">FUDGY BROWNIES SEKAT (35K)</text></svg>`;
+        return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+      } else {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><rect width="800" height="600" fill="#26140C"/><rect x="115" y="75" width="250" height="410" rx="34" fill="#B8BEC6"/><rect x="435" y="75" width="250" height="410" rx="34" fill="#B8BEC6"/><text x="400" y="300" font-family="sans-serif" font-size="24" font-weight="bold" fill="#FFF" text-anchor="middle">SCOOPABLE BROWNIES (15K)</text></svg>`;
+        return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+      }
+    }
+
+    const DEFAULT_MENUS = [
+      {
+        id: 'browminie-sekat',
+        name: 'Fudgy Brownies Sekat (Kotak Kecil)',
+        price: 35000,
+        desc: 'Fudgy brownies potongan kotak sekat praktis dengan tekstur lembut dan cokelat lumer di dalam. Lengkap dengan aneka pilihan topping melimpah.',
+        toppings: ['Mix Topping (Choco, Almond, Keju, RV, Lotus)', 'Full Chocochips', 'Almond & Keju', 'Red Velvet & Lotus'],
+        image: createBrowniesIllustration('sekat'),
+        badge: 'Best Seller • 35K'
+      },
+      {
+        id: 'browminie-scoopable',
+        name: 'Scoopable Fudgy Brownies',
+        price: 15000,
+        desc: 'Fudgy brownies lumer dalam cup aluminium foil praktis siap sendok. Cocok untuk teman santai atau camilan manis harianmu.',
+        toppings: ['Chocochips Melted', 'Red Velvet & Almond', 'Cheddar Cheese', 'Mix 2 Topping'],
+        image: createBrowniesIllustration('scoopable'),
+        badge: 'Comfort Cup • 15K'
+      }
+    ];
+
+    const DEFAULT_SETTINGS = {
+      storeName: 'BROWMINIE CAKE',
+      status: "We're OPEN",
+      orderRule: 'Order max H-3',
+      location: 'Purwokerto Selatan',
+      deliveryInfo: 'Melayani DO, COD & Ambil di Tempat',
+      whatsapp: '628985490037',
+      instagram: 'https://www.instagram.com/browminie.cake?rpxt=MW5zZGx0dDcycHF5cw=='
+    };
+
+    let menus = JSON.parse(localStorage.getItem('brw_menus_v1')) || DEFAULT_MENUS;
+    let storeSettings = JSON.parse(localStorage.getItem('brw_settings_v1')) || DEFAULT_SETTINGS;
+    let cart = {};
+    let selectedToppings = {};
+
+    window.formatRupiah = function(angka) {
+      return 'Rp ' + Number(angka).toLocaleString('id-ID');
+    };
+
+    function setupRealtimeSync() {
+      if (!db) return;
+      const qCol = collection(db, 'artifacts', appId, 'public', 'data', 'browminie_orders');
+      onSnapshot(qCol, (snapshot) => {
+        const fetchedOrders = [];
+        snapshot.forEach((docSnap) => {
+          fetchedOrders.push({ firestoreId: docSnap.id, ...docSnap.data() });
+        });
+        fetchedOrders.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+
+        // Deteksi pesanan baru untuk memicu notifikasi suara & banner
+        if (isInitialized && fetchedOrders.length > previousOrdersCount) {
+          playNotificationSound();
+          document.getElementById('order-notification-banner').classList.remove('hidden');
+        }
+
+        orders = fetchedOrders;
+        previousOrdersCount = orders.length;
+        isInitialized = true;
+
+        updateAdminBadges();
+        if (!document.getElementById('admin-view').classList.contains('hidden')) {
+          renderAdminDashboard();
+        }
+      }, (error) => {
+        console.error("Error sinkronisasi real-time:", error);
+      });
+    }
+
+    // Efek Suara Bip Lembut saat Pesanan Masuk
+    function playNotificationSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.8);
+      } catch (e) {
+        console.log("Audio diblokir browser");
+      }
+    }
+
+    window.dismissOrderNotification = function() {
+      document.getElementById('order-notification-banner').classList.add('hidden');
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+      const defaultOrderDate = new Date(today);
+      defaultOrderDate.setDate(today.getDate() + 3);
+      const defaultDateStr = defaultOrderDate.toISOString().split('T')[0];
+
+      const dateInput = document.getElementById('order-date');
+      if (dateInput) {
+        dateInput.min = todayStr;
+        dateInput.value = defaultDateStr;
+      }
+
+      menus.forEach(m => {
+        selectedToppings[m.id] = (m.toppings && m.toppings.length > 0) ? m.toppings[0] : 'Original';
+      });
+
+      applyStoreSettingsUI();
+      renderMenuGrid();
+      updateCartUI();
+      updateAdminBadges();
+      lucide.createIcons();
+    });
+
+    function applyStoreSettingsUI() {
+      document.title = `${storeSettings.storeName} — Brownies & Fudgy Brownies`;
+      document.getElementById('header-store-name').textContent = storeSettings.storeName;
+      document.getElementById('footer-store-name').textContent = storeSettings.storeName;
+      document.getElementById('copyright-store-name').textContent = storeSettings.storeName;
+
+      document.getElementById('topbar-status').textContent = storeSettings.status;
+      document.getElementById('topbar-h3').textContent = storeSettings.orderRule;
+      document.getElementById('topbar-location').textContent = storeSettings.location;
+      document.getElementById('topbar-delivery').textContent = storeSettings.deliveryInfo;
+
+      const waUrl = `https://wa.me/${storeSettings.whatsapp}?text=${encodeURIComponent('Halo ' + storeSettings.storeName + ', saya ingin bertanya seputar pemesanan brownies.')}`;
+      const igUrl = storeSettings.instagram;
+
+      document.getElementById('header-wa-link').href = waUrl;
+      document.getElementById('hero-wa-btn').href = waUrl;
+      document.getElementById('footer-wa-link').href = waUrl;
+      document.getElementById('header-ig-link').href = igUrl;
+      document.getElementById('hero-ig-btn').href = igUrl;
+      document.getElementById('footer-ig-link').href = igUrl;
+
+      if (menus.length > 0) {
+        document.getElementById('hero-featured-img').src = menus[0].image;
+      }
+
+      document.getElementById('setting-store-name').value = storeSettings.storeName;
+      document.getElementById('setting-store-status').value = storeSettings.status;
+      document.getElementById('setting-store-h3').value = storeSettings.orderRule;
+      document.getElementById('setting-store-location').value = storeSettings.location;
+      document.getElementById('setting-store-wa').value = storeSettings.whatsapp;
+      document.getElementById('setting-store-ig').value = storeSettings.instagram;
+    }
+
+    window.selectMenuTopping = function(menuId, topping) {
+      selectedToppings[menuId] = topping;
+    };
+
+    window.renderMenuGrid = function() {
+      const grid = document.getElementById('menu-grid');
+      const keyword = document.getElementById('search-menu-input').value.toLowerCase().trim();
+
+      const filtered = menus.filter(item =>
+        item.name.toLowerCase().includes(keyword) || item.desc.toLowerCase().includes(keyword)
+      );
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center bg-white rounded-3xl border border-cream-warm">
+            <p class="font-serif font-bold text-lg text-choco-dark">Menu tidak ditemukan</p>
+            <p class="text-sm text-choco-soft mt-1">Coba kata kunci pencarian lain.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const currentTopping = selectedToppings[item.id] || (item.toppings && item.toppings[0]) || 'Original';
+        const toppingsOptions = (item.toppings && item.toppings.length > 0)
+          ? item.toppings.map(t => `<option value="${t}" ${t === currentTopping ? 'selected' : ''}>${t}</option>`).join('')
+          : `<option value="Original">Original</option>`;
+
+        let itemTotalQty = 0;
+        Object.values(cart).forEach(c => {
+          if (c.menuId === item.id) itemTotalQty += c.qty;
+        });
+
+        return `
+          <article class="bg-white rounded-3xl border border-cream-warm overflow-hidden shadow-xs hover:shadow-lg transition flex flex-col justify-between group">
+            <div>
+              <div class="relative aspect-[4/3] bg-choco-dark overflow-hidden">
+                <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
+                ${item.badge ? `<span class="absolute top-3.5 left-3.5 px-3.5 py-1 rounded-full bg-choco-dark/90 backdrop-blur-xs text-caramel-light text-xs font-bold shadow-sm border border-caramel/30">${item.badge}</span>` : ''}
+                ${itemTotalQty > 0 ? `<span class="absolute top-3.5 right-3.5 px-3 py-1 rounded-full bg-caramel text-choco-dark text-xs font-extrabold shadow-sm">${itemTotalQty} di keranjang</span>` : ''}
+              </div>
+              <div class="p-6 pb-4 space-y-3">
+                <h3 class="font-serif font-bold text-xl sm:text-2xl text-choco-dark leading-snug">${item.name}</h3>
+                <p class="text-xs sm:text-sm text-choco-soft leading-relaxed">${item.desc}</p>
+                <div class="pt-1">
+                  <label class="block text-[11px] font-bold uppercase tracking-wider text-choco-soft mb-1.5">Pilih Varian Topping:</label>
+                  <select onchange="selectMenuTopping('${item.id}', this.value)" class="w-full px-3.5 py-2.5 rounded-xl bg-cream border border-cream-warm text-xs sm:text-sm font-semibold text-choco-dark focus:outline-none focus:border-choco">
+                    ${toppingsOptions}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="px-6 pb-6 pt-3 flex items-center justify-between gap-3 border-t border-cream-warm mt-2">
+              <div>
+                <span class="text-[11px] text-choco-soft block">Harga Satuan</span>
+                <span class="font-extrabold text-xl text-choco">${formatRupiah(item.price)}</span>
+              </div>
+              <button onclick="addSelectedToCart('${item.id}')" class="px-5 py-3 rounded-full bg-choco hover:bg-choco-melty text-cream font-bold text-xs sm:text-sm flex items-center gap-2 shadow-sm transition">
+                <i data-lucide="plus" class="w-4 h-4 text-caramel-light"></i>
+                <span>Tambah Pesanan</span>
+              </button>
+            </div>
+          </article>
+        `;
+      }).join('');
+      lucide.createIcons();
+    };
+
+    window.addSelectedToCart = function(menuId) {
+      const menu = menus.find(m => m.id === menuId);
+      if (!menu) return;
+      const topping = selectedToppings[menuId] || (menu.toppings && menu.toppings[0]) || 'Original';
+      const cartKey = `${menuId}::${topping}`;
+
+      if (cart[cartKey]) {
+        cart[cartKey].qty += 1;
+      } else {
+        cart[cartKey] = { key: cartKey, menuId: menu.id, name: menu.name, topping, price: menu.price, qty: 1 };
+      }
+      showToast(`"${menu.name}" (${topping}) ditambahkan!`);
+      renderMenuGrid();
+      updateCartUI();
+    };
+
+    window.updateCartItemQty = function(cartKey, delta) {
+      if (!cart[cartKey]) return;
+      cart[cartKey].qty += delta;
+      if (cart[cartKey].qty <= 0) delete cart[cartKey];
+      renderMenuGrid();
+      updateCartUI();
+    };
+
+    window.clearCart = function() {
+      cart = {};
+      renderMenuGrid();
+      updateCartUI();
+    };
+
+    function updateCartUI() {
+      const entries = Object.values(cart);
+      let totalItems = 0, totalPrice = 0;
+      entries.forEach(item => { totalItems += item.qty; totalPrice += item.price * item.qty; });
+
+      document.getElementById('cart-count-badge').textContent = totalItems;
+      const floatingBar = document.getElementById('floating-cart-bar');
+      if (totalItems > 0 && !document.getElementById('customer-view').classList.contains('hidden')) {
+        floatingBar.classList.remove('hidden');
+        document.getElementById('float-item-count').textContent = totalItems;
+        document.getElementById('float-total-price').textContent = formatRupiah(totalPrice);
+      } else {
+        floatingBar.classList.add('hidden');
+      }
+
+      const container = document.getElementById('cart-items-container');
+      const summaryBox = document.getElementById('cart-summary-box');
+      const checkoutForm = document.getElementById('checkout-form');
+      const clearBtn = document.getElementById('clear-cart-btn');
+
+      if (entries.length === 0) {
+        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-cream-warm text-center space-y-2"><div class="w-12 h-12 rounded-full bg-cream-warm text-choco mx-auto flex items-center justify-center"><i data-lucide="shopping-bag" class="w-6 h-6"></i></div><p class="font-bold text-choco-dark text-sm">Keranjang masih kosong</p></div>`;
+        summaryBox.classList.add('hidden');
+        checkoutForm.classList.add('hidden');
+        clearBtn.classList.add('hidden');
+      } else {
+        clearBtn.classList.remove('hidden');
+        summaryBox.classList.remove('hidden');
+        checkoutForm.classList.remove('hidden');
+        container.innerHTML = entries.map(item => `
+          <div class="bg-white p-3.5 rounded-2xl border border-cream-warm flex items-center justify-between gap-3">
+            <div class="min-w-0 flex-1">
+              <p class="font-bold text-sm text-choco-dark truncate">${item.name}</p>
+              <p class="text-[11px] text-choco-soft truncate">Topping: <strong class="text-choco-melty">${item.topping}</strong></p>
+              <p class="text-xs text-caramel font-bold mt-0.5">${formatRupiah(item.price)} x ${item.qty}</p>
+            </div>
+            <div class="flex items-center gap-1.5 bg-cream rounded-full px-2 py-1 border border-cream-warm">
+              <button type="button" onclick="updateCartItemQty('${item.key.replace(/'/g, "\\'")}', -1)" class="w-6 h-6 rounded-full hover:bg-cream-warm flex items-center justify-center text-choco-dark"><i data-lucide="minus" class="w-3 h-3"></i></button>
+              <span class="text-xs font-bold min-w-[18px] text-center">${item.qty}</span>
+              <button type="button" onclick="updateCartItemQty('${item.key.replace(/'/g, "\\'")}', 1)" class="w-6 h-6 rounded-full hover:bg-cream-warm flex items-center justify-center text-choco-dark"><i data-lucide="plus" class="w-3 h-3"></i></button>
+            </div>
+          </div>
+        `).join('');
+        document.getElementById('drawer-total-qty').textContent = `${totalItems} item`;
+        document.getElementById('drawer-total-price').textContent = formatRupiah(totalPrice);
+      }
+      lucide.createIcons();
+    }
+
+    window.openCartDrawer = function() {
+      document.getElementById('cart-drawer-backdrop').classList.remove('hidden');
+      document.getElementById('cart-drawer').classList.remove('translate-x-full');
+      updateCartUI();
+    };
+
+    window.closeCartDrawer = function() {
+      document.getElementById('cart-drawer-backdrop').classList.add('hidden');
+      document.getElementById('cart-drawer').classList.add('translate-x-full');
+    };
+
+    window.toggleAddressField = function() {
+      const method = document.querySelector('input[name="deliveryMethod"]:checked').value;
+      const label = document.getElementById('address-label');
+      const textarea = document.getElementById('order-notes');
+      if (method === 'Ambil di Tempat') {
+        label.textContent = 'Catatan Pesanan & Jam Ambil (Opsional)';
+        textarea.required = false;
+      } else {
+        label.textContent = 'Alamat Pengiriman / Titik COD & Catatan *';
+        textarea.required = true;
+      }
+    };
+
+    // SUBMIT PESANAN KE FIREBASE CLOUD REAL-TIME
+    window.submitOrder = async function(event) {
+      event.preventDefault();
+      const entries = Object.values(cart);
+      if (entries.length === 0) return;
+
+      let totalPrice = 0;
+      const items = entries.map(i => {
+        totalPrice += i.price * i.qty;
+        return { name: i.name, topping: i.topping, qty: i.qty, price: i.price };
+      });
+
+      const customerName = document.getElementById('order-name').value.trim();
+      const customerPhone = document.getElementById('order-phone').value.trim();
+      const deliveryDate = document.getElementById('order-date').value;
+      const deliveryMethod = document.querySelector('input[name="deliveryMethod"]:checked').value;
+      const notes = document.getElementById('order-notes').value.trim() || '-';
+
+      const now = new Date();
+      const formattedTime = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) +
+                            ', ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+      const orderId = 'BRW-' + Math.floor(100 + Math.random() * 900);
+
+      const newOrder = {
+        id: orderId,
+        createdAt: formattedTime,
+        timestamp: now.toISOString(),
+        customerName,
+        customerPhone,
+        deliveryDate,
+        deliveryMethod,
+        notes,
+        items,
+        totalPrice,
+        status: 'Baru'
+      };
+
+      if (db) {
+        try {
+          const docRef = doc(collection(db, 'artifacts', appId, 'public', 'data', 'browminie_orders'), orderId);
+          await setDoc(docRef, newOrder);
+        } catch (e) {
+          console.error("Gagal simpan ke cloud:", e);
+          orders.unshift(newOrder);
+          localStorage.setItem('brw_orders_v1', JSON.stringify(orders));
+        }
+      } else {
+        orders.unshift(newOrder);
+        localStorage.setItem('brw_orders_v1', JSON.stringify(orders));
+      }
+
+      clearCart();
+      closeCartDrawer();
+      document.getElementById('checkout-form').reset();
+      updateAdminBadges();
+
+      const itemsText = items.map(i => `• ${i.name} [${i.topping}] (${i.qty}x) = ${formatRupiah(i.price * i.qty)}`).join('\n');
+      const waMessage =
+`Halo *${storeSettings.storeName}*! Saya mau order brownies:
+
+*No. Order:* ${orderId}
+*Nama:* ${customerName}
+*No. WA:* ${customerPhone}
+*Tanggal Ambil/Kirim:* ${deliveryDate}
+*Metode:* ${deliveryMethod}
+*Alamat / Catatan:* ${notes}
+
+*Rincian Pesanan:*
+${itemsText}
+
+*Total Pembayaran: ${formatRupiah(totalPrice)}*
+
+Mohon konfirmasi pesanan saya ya Kak. Terima kasih!`;
+
+      const waLink = `https://wa.me/${storeSettings.whatsapp}?text=${encodeURIComponent(waMessage)}`;
+
+      document.getElementById('modal-customer-name').textContent = customerName;
+      document.getElementById('modal-order-id').textContent = '#' + orderId;
+      document.getElementById('modal-order-summary').innerHTML = `
+        <p><strong>Tanggal:</strong> ${deliveryDate} (${deliveryMethod})</p>
+        <p><strong>Menu:</strong> ${items.map(i => `${i.name} - ${i.topping} (${i.qty}x)`).join(', ')}</p>
+        <p class="text-choco font-extrabold pt-1">Total: ${formatRupiah(totalPrice)}</p>
+      `;
+      document.getElementById('modal-wa-send-btn').href = waLink;
+
+      const modal = document.getElementById('success-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    };
+
+    window.closeSuccessModal = function() {
+      document.getElementById('success-modal').classList.add('hidden');
+      document.getElementById('success-modal').classList.remove('flex');
+    };
+
+    window.switchView = function(view) {
+      const customerView = document.getElementById('customer-view');
+      const adminView = document.getElementById('admin-view');
+      const floatingBar = document.getElementById('floating-cart-bar');
+
+      if (view === 'admin') {
+        customerView.classList.add('hidden');
+        adminView.classList.remove('hidden');
+        floatingBar.classList.add('hidden');
+        renderAdminDashboard();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        adminView.classList.add('hidden');
+        customerView.classList.remove('hidden');
+        updateCartUI();
+      }
+      lucide.createIcons();
+    };
+
+    window.scrollToSection = function(id) {
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    };
+
+    function updateAdminBadges() {
+      const newCount = orders.filter(o => o.status === 'Baru').length;
+      const displayCount = newCount > 0 ? newCount : orders.length;
+      document.getElementById('admin-badge-count').textContent = displayCount;
+      document.getElementById('admin-badge-mobile').textContent = displayCount;
+    }
+
+    window.renderAdminDashboard = function() {
+      let totalOrders = orders.length;
+      let totalItems = 0;
+      let totalRevenue = 0;
+
+      orders.forEach(o => {
+        totalRevenue += Number(o.totalPrice);
+        if (o.items) o.items.forEach(i => totalItems += Number(i.qty));
+      });
+
+      document.getElementById('stat-total-orders').textContent = totalOrders;
+      document.getElementById('stat-total-items').innerHTML = `${totalItems} <span class="text-sm font-normal text-choco-soft">pcs</span>`;
+      document.getElementById('stat-total-revenue').textContent = formatRupiah(totalRevenue);
+
+      renderAdminOrders();
+      renderAdminMenuList();
+      updateAdminBadges();
+    };
+
+    window.renderAdminOrders = function() {
+      const tbody = document.getElementById('admin-orders-tbody');
+      const emptyState = document.getElementById('empty-orders-state');
+      const statusFilter = document.getElementById('filter-order-status').value;
+
+      const filtered = orders.filter(o => statusFilter === 'Semua' || o.status === statusFilter);
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      tbody.innerHTML = filtered.map(order => {
+        const itemsListHtml = (order.items || []).map(i =>
+          `<div class="text-xs"><span class="font-extrabold text-choco">${i.qty}x</span> ${i.name} <span class="text-choco-soft">(${i.topping})</span></div>`
+        ).join('');
+
+        let statusStyle = 'bg-amber-100 text-amber-800 border-amber-200';
+        if (order.status === 'Diproses') statusStyle = 'bg-blue-100 text-blue-800 border-blue-200';
+        if (order.status === 'Selesai') statusStyle = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+
+        const cleanPhone = (order.customerPhone || '').replace(/^0/, '62').replace(/[^0-9]/g, '');
+        const customerWaLink = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Halo Kak ${order.customerName}, pesanan brownies (${order.id}) di ${storeSettings.storeName} sedang kami proses ya.`)}`;
+
+        return `
+          <tr class="hover:bg-cream/50 transition align-top">
+            <td class="py-4 px-4 whitespace-nowrap">
+              <span class="font-extrabold text-choco block">#${order.id}</span>
+              <span class="text-[11px] text-choco-soft">${order.createdAt}</span>
+            </td>
+            <td class="py-4 px-4">
+              <p class="font-bold text-choco-dark">${order.customerName}</p>
+              <a href="${customerWaLink}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-xs text-emerald-700 hover:underline mt-0.5">
+                <i data-lucide="message-circle" class="w-3 h-3"></i> ${order.customerPhone}
+              </a>
+            </td>
+            <td class="py-4 px-4 space-y-1 min-w-[220px]">
+              ${itemsListHtml}
+              ${order.notes && order.notes !== '-' ? `<p class="text-[11px] text-choco-soft italic mt-1">Alamat/Catatan: "${order.notes}"</p>` : ''}
+            </td>
+            <td class="py-4 px-4 whitespace-nowrap">
+              <span class="font-bold text-xs text-choco-dark block">${order.deliveryDate}</span>
+              <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-cream-warm text-choco-dark font-semibold inline-block mt-1">${order.deliveryMethod}</span>
+            </td>
+            <td class="py-4 px-4 whitespace-nowrap font-extrabold text-choco-dark">
+              ${formatRupiah(order.totalPrice)}
+            </td>
+            <td class="py-4 px-4 whitespace-nowrap">
+              <select onchange="updateOrderStatus('${order.id}', this.value)" class="text-xs font-bold px-3 py-1.5 rounded-full border cursor-pointer focus:outline-none ${statusStyle}">
+                <option value="Baru" ${order.status === 'Baru' ? 'selected' : ''}>Baru</option>
+                <option value="Diproses" ${order.status === 'Diproses' ? 'selected' : ''}>Diproses</option>
+                <option value="Selesai" ${order.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
+              </select>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      lucide.createIcons();
+    };
+
+    window.updateOrderStatus = async function(orderId, newStatus) {
+      const target = orders.find(o => o.id === orderId);
+      if (target) {
+        target.status = newStatus;
+        if (db) {
+          try {
+            const docRef = doc(collection(db, 'artifacts', appId, 'public', 'data', 'browminie_orders'), orderId);
+            await setDoc(docRef, target, { merge: true });
+          } catch (e) {
+            console.error("Gagal update status cloud:", e);
+          }
+        }
+        renderAdminOrders();
+        updateAdminBadges();
+        showToast(`Status #${orderId} diubah menjadi "${newStatus}"`);
+      }
+    };
+
+    window.switchAdminTab = function(tab) {
+      const ordersTab = document.getElementById('admin-tab-orders');
+      const productsTab = document.getElementById('admin-tab-products');
+      const ordersBtn = document.getElementById('tab-orders-btn');
+      const productsBtn = document.getElementById('tab-products-btn');
+      const filterControls = document.getElementById('order-filter-controls');
+
+      if (tab === 'orders') {
+        ordersTab.classList.remove('hidden');
+        productsTab.classList.add('hidden');
+        filterControls.classList.remove('hidden');
+        ordersBtn.className = 'pb-3.5 text-sm font-bold border-b-2 border-choco text-choco-dark transition';
+        productsBtn.className = 'pb-3.5 text-sm font-semibold border-b-2 border-transparent text-choco-soft hover:text-choco-dark transition';
+      } else {
+        productsTab.classList.remove('hidden');
+        ordersTab.classList.add('hidden');
+        filterControls.classList.add('hidden');
+        productsBtn.className = 'pb-3.5 text-sm font-bold border-b-2 border-choco text-choco-dark transition';
+        ordersBtn.className = 'pb-3.5 text-sm font-semibold border-b-2 border-transparent text-choco-soft hover:text-choco-dark transition';
+      }
+    };
+
+    function compressImageFile(file, callback) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 800;
+          let width = img.width;
+          let height = img.height;
+          if (width > MAX_WIDTH) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          callback(canvas.toDataURL('image/jpeg', 0.82));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    window.handleReplaceMenuPhoto = function(menuId, inputEl) {
+      const file = inputEl.files && inputEl.files[0];
+      if (!file) return;
+      compressImageFile(file, (dataUrl) => {
+        const idx = menus.findIndex(m => m.id === menuId);
+        if (idx !== -1) {
+          menus[idx].image = dataUrl;
+          localStorage.setItem('brw_menus_v1', JSON.stringify(menus));
+          applyStoreSettingsUI();
+          renderMenuGrid();
+          renderAdminMenuList();
+          showToast(`Foto "${menus[idx].name}" berhasil diperbarui!`);
+        }
+      });
+    };
+
+    function renderAdminMenuList() {
+      const container = document.getElementById('admin-menu-list');
+      container.innerHTML = menus.map(m => `
+        <div class="bg-cream p-4 rounded-2xl border border-cream-warm flex items-center gap-4">
+          <img src="${m.image}" alt="${m.name}" class="w-20 h-20 rounded-xl object-cover border border-cream-warm shrink-0 bg-choco-dark" />
+          <div class="min-w-0 flex-1 space-y-1.5">
+            <p class="font-bold text-sm text-choco-dark truncate">${m.name}</p>
+            <p class="text-xs font-extrabold text-choco">${formatRupiah(m.price)}</p>
+            <div class="flex flex-wrap items-center gap-2 pt-1">
+              <label class="cursor-pointer inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-choco hover:bg-choco-melty text-cream text-xs font-bold transition">
+                <i data-lucide="image-plus" class="w-3.5 h-3.5 text-caramel-light"></i>
+                <span>Ganti Foto</span>
+                <input type="file" accept="image/*" onchange="handleReplaceMenuPhoto('${m.id}', this)" class="hidden" />
+              </label>
+              <button onclick="deleteMenu('${m.id}')" class="px-2.5 py-1.5 rounded-lg text-red-700 hover:bg-red-100 text-xs font-semibold transition">Hapus</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    window.handleAddMenu = function(event) {
+      event.preventDefault();
+      const name = document.getElementById('new-menu-name').value.trim();
+      const price = Number(document.getElementById('new-menu-price').value);
+      const desc = document.getElementById('new-menu-desc').value.trim();
+      const toppingsRaw = document.getElementById('new-menu-toppings').value.trim();
+      const fileInput = document.getElementById('new-menu-file');
+
+      const toppings = toppingsRaw ? toppingsRaw.split(',').map(t => t.trim()).filter(Boolean) : ['Mix Topping', 'Chocochips', 'Keju'];
+
+      const finalizeAdd = (imageUrl) => {
+        const newMenu = { id: 'brw-menu-' + Date.now(), name, price, desc, toppings, image: imageUrl, badge: 'Menu Baru' };
+        menus.push(newMenu);
+        selectedToppings[newMenu.id] = toppings[0];
+        localStorage.setItem('brw_menus_v1', JSON.stringify(menus));
+        event.target.reset();
+        renderMenuGrid();
+        renderAdminMenuList();
+        showToast(`Menu "${name}" berhasil ditambahkan!`);
+      };
+
+      if (fileInput.files && fileInput.files[0]) {
+        compressImageFile(fileInput.files[0], finalizeAdd);
+      } else {
+        finalizeAdd(createBrowniesIllustration('sekat'));
+      }
+    };
+
+    window.deleteMenu = function(menuId) {
+      menus = menus.filter(m => m.id !== menuId);
+      localStorage.setItem('brw_menus_v1', JSON.stringify(menus));
+      renderMenuGrid();
+      renderAdminMenuList();
+      showToast('Menu berhasil dihapus');
+    };
+
+    window.handleSaveStoreSettings = function(event) {
+      event.preventDefault();
+      storeSettings = {
+        storeName: document.getElementById('setting-store-name').value.trim(),
+        status: document.getElementById('setting-store-status').value.trim(),
+        orderRule: document.getElementById('setting-store-h3').value.trim(),
+        location: document.getElementById('setting-store-location').value.trim(),
+        deliveryInfo: storeSettings.deliveryInfo,
+        whatsapp: document.getElementById('setting-store-wa').value.trim().replace(/[^0-9]/g, ''),
+        instagram: document.getElementById('setting-store-ig').value.trim()
+      };
+      localStorage.setItem('brw_settings_v1', JSON.stringify(storeSettings));
+      applyStoreSettingsUI();
+      showToast('Pengaturan toko berhasil disimpan!');
+    };
+
+    window.exportOrdersCSV = function() {
+      if (orders.length === 0) {
+        showToast('Belum ada data pesanan.');
+        return;
+      }
+      const headers = ['ID Order', 'Waktu Pesan', 'Nama Pemesan', 'No WhatsApp', 'Tanggal Kirim/Ambil', 'Metode', 'Rincian Menu & Topping', 'Total Harga', 'Status', 'Alamat/Catatan'];
+      const rows = orders.map(o => {
+        const itemSummary = (o.items || []).map(i => `${i.name} [${i.topping}] (${i.qty}x)`).join('; ');
+        return [o.id, `"${o.createdAt}"`, `"${o.customerName}"`, `"${o.customerPhone}"`, o.deliveryDate, `"${o.deliveryMethod}"`, `"${itemSummary}"`, o.totalPrice, o.status, `"${(o.notes || '').replace(/"/g, '""')}"`].join(',');
+      });
+      const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows].join('\n');
+      const link = document.createElement('a');
+      link.setAttribute('href', encodeURI(csvContent));
+      link.setAttribute('download', `Rekap_Pesanan_BROWMINIE_CAKE.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('File rekap Excel (CSV) berhasil diunduh!');
+    };
+
+    window.confirmClearOrders = function() {
+      document.getElementById('confirm-reset-modal').classList.remove('hidden');
+      document.getElementById('confirm-reset-modal').classList.add('flex');
+    };
+
+    window.closeResetModal = function() {
+      document.getElementById('confirm-reset-modal').classList.add('hidden');
+      document.getElementById('confirm-reset-modal').classList.remove('flex');
+    };
+
+    window.executeClearOrders = async function() {
+      if (db) {
+        try {
+          const qSnap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'browminie_orders'));
+          for (const d of qSnap.docs) {
+            await deleteDoc(d.ref);
+          }
+        } catch (e) {
+          console.error("Gagal hapus cloud:", e);
+        }
+      }
+      orders = [];
+      localStorage.setItem('brw_orders_v1', JSON.stringify(orders));
+      closeResetModal();
+      renderAdminDashboard();
+      showToast('Semua rekap online telah direset.');
+    };
+
+    window.showToast = function(message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'bg-choco-dark text-cream px-4 py-3 rounded-2xl shadow-lg border border-caramel/40 text-xs sm:text-sm font-medium flex items-center gap-2 transition-all duration-300';
+      toast.innerHTML = `<span class="w-2 h-2 rounded-full bg-caramel shrink-0"></span><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 2800);
+    };
+  </script>
+</body>
+</html>
